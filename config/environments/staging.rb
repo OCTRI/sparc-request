@@ -92,5 +92,5 @@ SparcRails::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
-  config.action_mailer.default_url_options = { :host => 'sparc-s.obis.musc.edu' }
+  config.action_mailer.default_url_options = { :host => 'sparc-s.obis.musc.edu', :script_name => Rails.application.config.relative_url_root }
 end

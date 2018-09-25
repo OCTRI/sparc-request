@@ -54,7 +54,7 @@ SparcRails::Application.configure do
   # Print deprecation notices to the stderr
   config.active_support.deprecation = :silence
 
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
+  config.action_mailer.default_url_options = { :host => 'localhost:3000', :script_name => Rails.application.config.relative_url_root }
 
   # Paperclip
   Paperclip::Attachment.default_options[:path] = "#{Rails.root}/spec/test_files/:class/:id_partition/:style.:extension"

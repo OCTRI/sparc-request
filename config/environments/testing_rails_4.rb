@@ -53,5 +53,5 @@ SparcRails::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
-  config.action_mailer.default_url_options = { :host => 'sparc-d.obis.musc.edu' }
+  config.action_mailer.default_url_options = { :host => 'sparc-d.obis.musc.edu', :script_name => Rails.application.config.relative_url_root }
 end
