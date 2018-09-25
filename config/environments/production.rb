@@ -95,12 +95,12 @@ SparcRails::Application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.action_mailer.delivery_method = :sendmail
-  config.action_mailer.default_url_options = { host: "sparc.musc.edu" }
+  config.action_mailer.default_url_options = { host: "sparc.musc.edu", :script_name => Rails.application.config.relative_url_root }
   config.after_initialize do
     # Need to do this after initialization so that obis_setup has run and our config is loaded
     if defined? ROOT_URL
       unless ROOT_URL.nil?
-        new_options = { host: ROOT_URL.sub(/^http(s)?\:\/\//, '') }
+        new_options = { host: ROOT_URL.sub(/^http(s)?\:\/\//, ''), :script_name => Rails.application.config.relative_url_root }
         config.action_mailer.default_url_options = new_options
 
         # By the time we run ActionMailer has already copied the options
