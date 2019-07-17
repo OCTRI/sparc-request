@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,9 +25,9 @@ RSpec.describe 'User manages fulfillment rights', js: true do
   fake_login_for_each_test
 
   before :each do
-    @institution        = create(:institution)
-    @provider           = create(:provider, parent_id: @institution.id, tag_list: 'clinical work fulfillment', process_ssrs: true)
-    @identity           = create(:identity)
+    @institution = create(:institution)
+    @provider    = create(:provider, :with_subsidy_map, parent_id: @institution.id, tag_list: 'clinical work fulfillment', process_ssrs: true)
+    @identity    = create(:identity)
     create(:catalog_manager, organization_id: @institution.id, identity_id: Identity.where(ldap_uid: 'jug2').first.id)
 
     visit catalog_manager_catalog_index_path

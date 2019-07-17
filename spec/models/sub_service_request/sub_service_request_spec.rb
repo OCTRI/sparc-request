@@ -1,5 +1,5 @@
 # coding: utf-8
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -123,7 +123,7 @@ RSpec.describe SubServiceRequest, type: :model do
       context "indirect cost total" do
 
         it "should return the indirect cost for one time fees" do
-          if Setting.find_by_key("use_indirect_cost").value
+          if Setting.get_value("use_indirect_cost")
             expect(sub_service_request.indirect_cost_total).to eq(1000)
           else
             expect(sub_service_request.indirect_cost_total).to eq(0.0)
@@ -131,7 +131,7 @@ RSpec.describe SubServiceRequest, type: :model do
         end
 
         it "should return the indirect cost for visit based services" do
-          if Setting.find_by_key("use_indirect_cost").value
+          if Setting.get_value("use_indirect_cost")
             expect(sub_service_request.indirect_cost_total).to eq(1000)
           else
             expect(sub_service_request.indirect_cost_total).to eq(0.0)
@@ -142,7 +142,7 @@ RSpec.describe SubServiceRequest, type: :model do
       context "grand total" do
 
         it "should return the grand total cost of the sub service request" do
-          if Setting.find_by_key("use_indirect_cost").value
+          if Setting.get_value("use_indirect_cost")
             expect(sub_service_request.grand_total).to eq(1500)
           else
             expect(sub_service_request.grand_total).to eq(5000.0)

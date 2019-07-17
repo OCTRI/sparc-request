@@ -1,4 +1,4 @@
-// Copyright © 2011-2018 MUSC Foundation for Research Development
+// Copyright © 2011-2019 MUSC Foundation for Research Development
 // All rights reserved.
 
 // Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -30,6 +30,7 @@
 //= require jquery
 //= require bootstrap-sprockets
 //= require bootstrap-select
+//= require bootstrap-select-custom
 //= require bootstrap-table
 //= require bootstrap-table-export
 //= require bootstrap-table-custom
@@ -42,7 +43,6 @@
 //= require jquery.remotipart
 //= require jquery.cookie
 //= require jquery.form
-//= require jquery.toastmessage
 //= require nprogress
 //= require nprogress-ajax
 //= require json2
@@ -54,3 +54,4 @@
 //= require assert
 //= require ajax_handler
 //= require sweetalert.min
+//= require ../global

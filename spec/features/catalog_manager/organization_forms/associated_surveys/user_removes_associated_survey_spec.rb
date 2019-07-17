@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ RSpec.describe 'User manages associated surveys', js: true do
 
   before :each do
     @institution        = create(:institution)
-    @provider           = create(:provider, parent_id: @institution.id)
+    @provider           = create(:provider, :with_subsidy_map, parent_id: @institution.id)
     @survey             = create(:survey, active: true, type: 'SystemSurvey')
     @associated_survey  = create(:associated_survey, associable_id: @provider.id, survey_id: @survey.id, associable_type: 'Organization')
     create(:catalog_manager, organization_id: @institution.id, identity_id: Identity.where(ldap_uid: 'jug2').first.id)
@@ -38,17 +38,17 @@ RSpec.describe 'User manages associated surveys', js: true do
     click_link @provider.name
     wait_for_javascript_to_finish
 
-    click_link 'Associated Surveys'
+    click_link I18n.t(:catalog_manager)[:organization_form][:headers][:associated_surveys]
     wait_for_javascript_to_finish
 
     find('.remove-associated-survey').click
+    accept_confirm
     wait_for_javascript_to_finish
 
   end
 
   it 'should delete the associated survey for the organization' do
     expect(AssociatedSurvey.where(associable_id: @provider.id).count).to eq(0)
-    expect(page).to_not have_selector("survey-row-#{@associated_survey.id}")
+    expect(page).to have_no_selector("survey-row-#{@associated_survey.id}")
   end
-
 end

@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -25,10 +25,10 @@ RSpec.describe 'User views an organization', js: true do
   fake_login_for_each_test
 
   before :each do
-    @institution  = create(:institution)
-    @provider     = create(:provider, parent: @institution)
-    @program      = create(:program, parent: @provider)
-    @core         = create(:core, parent: @program)
+    @institution  = create(:institution, :with_subsidy_map)
+    @provider     = create(:provider, :with_subsidy_map, parent: @institution)
+    @program      = create(:program, :with_subsidy_map, parent: @provider)
+    @core         = create(:core, :with_subsidy_map, parent: @program)
     create(:catalog_manager, organization: @institution, identity: jug2)
 
     visit catalog_manager_catalog_index_path

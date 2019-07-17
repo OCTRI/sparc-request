@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development~
+# Copyright © 2011-2019 MUSC Foundation for Research Development~
 # All rights reserved.~
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:~
@@ -68,8 +68,7 @@ RSpec.describe Notifier do
             assert_email_request_amendment_for_deleted(@mail.body.parts.first.body)
           end
 
-          it 'should not have a reminder note or submission reminder' do
-            does_not_have_a_reminder_note(@mail)
+          it 'should not have a submission reminder' do
             does_not_have_a_submission_reminder(@mail)
           end
         end
@@ -133,8 +132,7 @@ RSpec.describe Notifier do
             assert_email_request_amendment_for_added(@mail.body.parts.first.body)
           end
 
-          it 'should not have a reminder note or submission reminder' do
-            does_not_have_a_reminder_note(@mail)
+          it 'should not have a submission reminder' do
             does_not_have_a_submission_reminder(@mail)
           end
         end
@@ -184,7 +182,7 @@ RSpec.describe Notifier do
             created_line_item_audit_trail(@service_request, @service, identity)
 
             @report               = setup_authorized_user_audit_report
-            @mail                 = Notifier.notify_user(@project_role, @service_request, nil, @approval, identity, @report)
+            @mail                 = Notifier.notify_user(@project_role, @service_request, @approval, identity, @report)
           end
 
           # Expected service provider message is defined under request_amendment_intro
@@ -197,8 +195,7 @@ RSpec.describe Notifier do
             assert_email_request_amendment_for_added(@mail.body.parts.first.body, true)
           end
 
-          it 'should not have a reminder note or submission reminder' do
-            does_not_have_a_reminder_note(@mail)
+          it 'should not have a submission reminder' do
             does_not_have_a_submission_reminder(@mail)
           end
         end
@@ -221,7 +218,7 @@ RSpec.describe Notifier do
             created_line_item_audit_trail(@service_request, @service, identity)
 
             @report               = setup_authorized_user_audit_report
-            @mail                 = Notifier.notify_user(@project_role, @service_request, nil, @approval, identity, @report)
+            @mail                 = Notifier.notify_user(@project_role, @service_request, @approval, identity, @report)
           end
 
           it 'should show epic column' do
@@ -294,8 +291,7 @@ RSpec.describe Notifier do
             assert_email_request_amendment_for_deleted(@mail.body.parts.first.body)
           end
 
-          it 'should not have a reminder note or submission reminder' do
-            does_not_have_a_reminder_note(@mail)
+          it 'should not have a submission reminder' do
             does_not_have_a_submission_reminder(@mail)
           end
         end
@@ -345,7 +341,7 @@ RSpec.describe Notifier do
             deleted_line_item_audit_trail(@service_request, @service, identity)
 
             @report               = setup_authorized_user_audit_report
-            @mail                 = Notifier.notify_user(@project_role, @service_request, nil, @approval, identity, @report)
+            @mail                 = Notifier.notify_user(@project_role, @service_request, @approval, identity, @report)
           end
 
           # Expected service provider message is defined under request_amendment_intro
@@ -358,8 +354,7 @@ RSpec.describe Notifier do
             assert_email_request_amendment_for_deleted(@mail.body.parts.first.body, true)
           end
 
-          it 'should not have a reminder note or submission reminder' do
-            does_not_have_a_reminder_note(@mail)
+          it 'should not have a submission reminder' do
             does_not_have_a_submission_reminder(@mail)
           end
         end
@@ -382,7 +377,7 @@ RSpec.describe Notifier do
             deleted_line_item_audit_trail(@service_request, @service, identity)
 
             @report               = setup_authorized_user_audit_report
-            @mail                 = Notifier.notify_user(@project_role, @service_request, nil, @approval, identity, @report)
+            @mail                 = Notifier.notify_user(@project_role, @service_request, @approval, identity, @report)
           end
 
           it 'should show epic column' do
@@ -457,8 +452,7 @@ RSpec.describe Notifier do
         assert_email_request_amendment_for_deleted(@mail.body.parts.first.body)
       end
 
-      it 'should have a notes reminder message but not a submission reminder' do
-        does_have_a_reminder_note(@mail)
+      it 'should not have a submission reminder' do
         does_not_have_a_submission_reminder(@mail)
       end
     end

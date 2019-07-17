@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ RSpec.describe 'User sets each Service Calendar field', js: true do
   fake_login_for_each_test
 
   before :each do
-    org       = create(:organization, admin: jug2, service_provider: jug2)
+    org       = create(:organization, admin: jug2, service_provider: jug2, process_ssrs: true)
     pricing   = create(:pricing_setup, organization: org)
     pppv      = create(:service, organization: org, one_time_fee: false, pricing_map_count: 1)
     otf       = create(:service, organization: org, one_time_fee: true, pricing_map_count: 1)
@@ -77,8 +77,8 @@ RSpec.describe 'User sets each Service Calendar field', js: true do
 
       context 'check row' do
         before :each do
-          @visit_row = find('.service-calendar-row', match: :first)
-          @visit_row.click
+          first('.service-calendar-row').click
+          accept_confirm
           wait_for_javascript_to_finish
         end
 
@@ -93,8 +93,8 @@ RSpec.describe 'User sets each Service Calendar field', js: true do
 
        context 'check column' do
         before :each do
-          @visit_col = find('.service-calendar-column', match: :first)
-          @visit_col.click
+          first('.service-calendar-column').click
+          accept_confirm
           wait_for_javascript_to_finish
         end
 

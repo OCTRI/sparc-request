@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development~
+# Copyright © 2011-2019 MUSC Foundation for Research Development~
 # All rights reserved.~
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:~
@@ -46,6 +46,26 @@ RSpec.describe CatalogManager::SuperUsersController, type: :controller do
         xhr: true
 
       expect(SuperUser.count).to eq(0)
+    end
+  end
+
+  describe '#update' do
+    it 'should update access_empty_protocols to true' do
+      su = create(:super_user, identity_id: @identity.id, organization_id: @organization_id, access_empty_protocols: false)
+      put :update,
+        params: { super_user: { identity_id: @identity.id, organization_id: @organization_id, access_empty_protocols: 'true' } },
+        xhr: true
+
+      expect(su.reload.access_empty_protocols).to eq(true)
+    end
+
+    it 'should update access_empty_protocols to false' do
+      su = create(:super_user, identity_id: @identity.id, organization_id: @organization_id, access_empty_protocols: true)
+      put :update,
+        params: { super_user: { identity_id: @identity.id, organization_id: @organization_id, access_empty_protocols: 'false' } },
+        xhr: true
+
+      expect(su.reload.access_empty_protocols).to eq(false)
     end
   end
 

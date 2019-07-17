@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ RSpec.describe 'User edits Organization Pricing', js: true do
 
   before :each do
     @institution     = create(:institution)
-    @provider        = create(:provider, parent_id: @institution.id)
+    @provider        = create(:provider, :with_subsidy_map, parent_id: @institution.id)
     @catalog_manager = create(:catalog_manager, organization_id: @institution.id, identity_id: Identity.where(ldap_uid: 'jug2').first.id, edit_historic_data: true)
     create(:pricing_setup, organization: @provider, display_date: Date.today - 1, effective_date: Date.today - 1, college_rate_type: 'full', federal_rate_type: 'full',
            industry_rate_type: 'full', investigator_rate_type: 'full', internal_rate_type: 'full', foundation_rate_type: 'full', unfunded_rate_type: 'full')
@@ -134,13 +134,13 @@ RSpec.describe 'User edits Organization Pricing', js: true do
         find(".edit_pricing_setup_link").click
         wait_for_javascript_to_finish
 
-        expect(page.find("select#pricing_setup_college_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
-        expect(page.find("select#pricing_setup_federal_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
-        expect(page.find("select#pricing_setup_industry_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
-        expect(page.find("select#pricing_setup_investigator_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
-        expect(page.find("select#pricing_setup_internal_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
-        expect(page.find("select#pricing_setup_foundation_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
-        expect(page.find("select#pricing_setup_unfunded_rate_type + .bootstrap-select")).to have_selector('button.dropdown-toggle.disabled')
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_college_rate_type + .dropdown-toggle.disabled")
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_federal_rate_type + .dropdown-toggle.disabled")
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_industry_rate_type + .dropdown-toggle.disabled")
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_investigator_rate_type + .dropdown-toggle.disabled")
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_internal_rate_type + .dropdown-toggle.disabled")
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_foundation_rate_type + .dropdown-toggle.disabled")
+        expect(page).to have_selector(".bootstrap-select select#pricing_setup_unfunded_rate_type + .dropdown-toggle.disabled")
       end
 
     end

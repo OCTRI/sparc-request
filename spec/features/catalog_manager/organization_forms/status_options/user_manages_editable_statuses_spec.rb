@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ RSpec.describe 'User manages status options', js: true do
 
   before :each do
     @institution        = create(:institution)
-    @provider           = create(:provider, parent_id: @institution.id, process_ssrs: true, use_default_statuses: false)
+    @provider           = create(:provider, :with_subsidy_map, parent_id: @institution.id, process_ssrs: true, use_default_statuses: false)
     @catalog_manager    = create(:catalog_manager, organization_id: @institution.id, identity_id: Identity.where(ldap_uid: 'jug2').first.id)
   end
 

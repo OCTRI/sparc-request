@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@ RSpec.describe 'User edits organization general info', js: true do
 
   before :each do
     @institution = create(:institution)
-    @provider = create(:provider, parent_id: @institution.id)
+    @provider = create(:provider, :with_subsidy_map, parent_id: @institution.id, process_ssrs: true)
     create(:catalog_manager, organization_id: @institution.id, identity_id: Identity.where(ldap_uid: 'jug2').first.id)
     create(:tag, name: "clinical work fulfillment")
   end
@@ -93,7 +93,7 @@ RSpec.describe 'User edits organization general info', js: true do
         wait_for_javascript_to_finish
 
         @provider.reload
-        expect(@provider.process_ssrs).to eq(true)
+        expect(@provider.process_ssrs).to eq(false)
       end
 
       it 'should select a color' do

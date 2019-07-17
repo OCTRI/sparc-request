@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -26,35 +26,36 @@ class Service < ApplicationRecord
   audited
   acts_as_taggable
 
-  RATE_TYPES = [{:display => "Service Rate", :value => "full"}, {:display => "Federal Rate", :value => "federal"},
-                {:display => "Corporate Rate", :value => "corporate"}, {:display => "Other Rate", :value => "other"},
-                {:display => "Member Rate", :value => "member"}]
+  RATE_TYPES = {
+    full: "Service Rate", federal: "Federal Rate", corporate: "Corporate Rate",
+    member: "Member Rate", other: "Other Rate"
+  }
 
   belongs_to :organization, -> { includes(:pricing_setups) }
   belongs_to :revenue_code_range
+
   # set ":inverse_of => :service" so that the first pricing map can be validated before the service has been saved
   has_many :pricing_maps, :inverse_of => :service, :dependent => :destroy
+  has_many :line_items, :dependent => :destroy
+  has_many :forms, -> { active }, as: :surveyable, dependent: :destroy# Surveys associated with this service
+  has_many :service_relations, :dependent => :destroy
+  has_many :depending_service_relations, :class_name => 'ServiceRelation', :foreign_key => 'related_service_id'# Services that depend on this service
+  has_many :associated_surveys, as: :associable, dependent: :destroy
+
   has_many :sub_service_requests, through: :line_items
   has_many :service_requests, through: :sub_service_requests
-  has_many :line_items, :dependent => :destroy
-  has_many :identities, :through => :service_providers
-  has_many :forms, -> { active }, as: :surveyable, dependent: :destroy
+
+  # Services that this service depends on
+  has_many :related_services, :through => :service_relations
+  has_many :required_services, -> { where("required = ? and is_available = ?", true, true) }, :through => :service_relations, :source => :related_service
+  has_many :optional_services, -> { where("required = ? and is_available = ?", false, true) }, :through => :service_relations, :source => :related_service
+  has_many :surveys, through: :associated_surveys
+
+  has_many :depending_services, :through => :depending_service_relations, :source => :service# Services that depend on this service
+
   ## commented out to remove tags, but will likely be added in later ##
   # has_many :taggings, through: :organization
   # has_many :tags, through: :taggings
-
-  # Services that this service depends on
-  has_many :service_relations, :dependent => :destroy
-  has_many :related_services, :through => :service_relations
-  has_many :required_services, -> { where("optional = ? and is_available = ?", false, true) }, :through => :service_relations, :source => :related_service
-  has_many :optional_services, -> { where("optional = ? and is_available = ?", true, true) }, :through => :service_relations, :source => :related_service
-
-  # Services that depend on this service
-  has_many :depending_service_relations, :class_name => 'ServiceRelation', :foreign_key => 'related_service_id'
-  has_many :depending_services, :through => :depending_service_relations, :source => :service
-
-  # Surveys associated with this service
-  has_many :associated_surveys, as: :associable, dependent: :destroy
 
   validates :abbreviation,
             :order,
@@ -63,8 +64,12 @@ class Service < ApplicationRecord
   validate  :one_time_fee_choice
   validates :order, numericality: { only_integer: true }, on: :update
 
+  default_scope -> {
+    order(:order, :name)
+  }
+
   # Services listed under the funding organizations
-  scope :funding_opportunities, -> { where(organization_id: Setting.find_by_key("funding_org_ids").value) }
+  scope :funding_opportunities, -> { where(organization_id: Setting.get_value("funding_org_ids")) }
 
   def humanized_status
     self.is_available ? I18n.t(:reporting)[:service_pricing][:available] : I18n.t(:reporting)[:service_pricing][:unavailable]
@@ -83,7 +88,7 @@ class Service < ApplicationRecord
   # Service belongs to Organization A, which belongs to
   # Organization B, which belongs to Organization C, return "C > B > A".
   # This "hierarchy" stops at a process_ssrs Organization.
-  def organization_hierarchy(include_self=false, process_ssrs=true, use_css=false)
+  def organization_hierarchy(include_self=false, process_ssrs=true, use_css=false, use_array=false)
     parent_orgs = self.parents.reverse
 
     if process_ssrs
@@ -92,10 +97,12 @@ class Service < ApplicationRecord
       root = parent_orgs.length - 1
     end
 
-    if use_css
-      parent_orgs[0..root].map{ |o| "<span class='#{o.css_class}-text'>#{o.abbreviation}</span>"}.reverse.join('<span> / </span>') + (include_self ? '<span> / </span>' + "<span>#{self.abbreviation}</span>" : '')
+    if use_array
+      parent_orgs[0..root]
+    elsif use_css
+      parent_orgs[0..root].map{ |o| "<span class='#{o.css_class}-text'>#{o.abbreviation}</span>"}.join('<span> / </span>') + (include_self ? '<span> / </span>' + "<span>#{self.abbreviation}</span>" : '')
     else
-      parent_orgs[0..root].map(&:abbreviation).reverse.join(' > ') + (include_self ? ' > ' + self.abbreviation : '')
+      parent_orgs[0..root].map(&:abbreviation).join(' > ') + (include_self ? ' > ' + self.abbreviation : '')
     end
   end
 
@@ -104,40 +111,23 @@ class Service < ApplicationRecord
   end
 
   def program
-    return core.parent if organization.type == 'Core'
+    return core.parent  if organization.type == 'Core'
     return organization if organization.type == 'Program'
   end
 
   def provider
-    org = nil
-    org = core.program.parent if organization.type == 'Core'
-    org = program.parent if organization.type == 'Program'
-    org = organization if organization.type == 'Provider'
-    org
+    return program.parent if ['Core', 'Program'].include?(organization.type)
+    return organization   if organization.type == 'Provider'
   end
 
   def institution
-    org = nil
-    org = core.program.provider.parent if organization.type == 'Core'
-    org = program.provider.parent if organization.type == 'Program'
-    org = provider.parent if organization.type == 'Provider'
-    org = organization if organization.type == 'Institution'
-    org
+    return provider.parent  if ['Core', 'Program', 'Provider'].include?(organization.type)
+    return organization     if organization.type == 'Institution'
   end
 
   # do i have any available surveys, otherwise, look up tree and return first available surveys
   def available_surveys
-    available = nil
-
-    #TODO: Should we get all parent surveys instead of the closest parent's surveys?
-    parents.reverse.each do |parent|
-      next if parent.type == 'Institution' # Institutions can't define associated surveys
-      available = parent.associated_surveys.map(&:survey) unless parent.associated_surveys.empty?
-    end
-
-    available = associated_surveys.map(&:survey) unless associated_surveys.empty? # i have available surveys, use those instead
-
-    available
+    (self.surveys + self.parents.map{ |parent| parent.surveys }.flatten).compact.uniq
   end
 
   # Given a dollar amount as a String, return an integer number of
@@ -336,6 +326,10 @@ class Service < ApplicationRecord
 
   def remotely_notifiable_attributes_to_watch_for_change
     ["components"]
+  end
+
+  def direct_link
+    "#{Setting.get_value('root_url')}/services/#{id}"
   end
 
   private

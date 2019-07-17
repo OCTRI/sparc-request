@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -22,12 +22,12 @@ class Question < ActiveRecord::Base
 
   belongs_to :section
   belongs_to :depender, class_name: 'Option'
-  
-  delegate :survey, to: :section
-
   has_many :options, dependent: :destroy
   has_many :question_responses, dependent: :destroy
+
   has_many :dependents, through: :options
+
+  delegate :survey, to: :section
 
   validates :content,
             :question_type,

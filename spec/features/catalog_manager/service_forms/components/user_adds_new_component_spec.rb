@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -27,7 +27,7 @@ RSpec.describe 'User adds new service level components', js: true do
   before :each do
     @institution  = create(:institution)
     @provider     = create(:provider, parent: @institution)
-    @program      = create(:program, parent: @provider)
+    @program      = create(:program, :in_fulfillment, :process_ssrs, parent: @provider)
     @service      = create(:service, organization: @program, components: "", one_time_fee: true)
     create(:catalog_manager, organization: @institution, identity: jug2)
 

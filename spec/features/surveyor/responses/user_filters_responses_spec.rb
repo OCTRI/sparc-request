@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development
+# Copyright © 2011-2019 MUSC Foundation for Research Development
 # All rights reserved.
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
@@ -53,7 +53,7 @@ RSpec.describe 'User filters responses', js: true do
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @form.title)
-        expect(page).to_not have_selector('td', text: @survey.title)
+        expect(page).to have_no_selector('td', text: @survey.title)
       end
     end
 
@@ -64,7 +64,7 @@ RSpec.describe 'User filters responses', js: true do
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @survey.title)
-        expect(page).to_not have_selector('td', text: @form.title)
+        expect(page).to have_no_selector('td', text: @form.title)
       end
     end
   end
@@ -86,7 +86,7 @@ RSpec.describe 'User filters responses', js: true do
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @survey.title)
-        expect(page).to_not have_selector('td', text: @inactive_survey.title)
+        expect(page).to have_no_selector('td', text: @inactive_survey.title)
       end
     end
 
@@ -97,7 +97,7 @@ RSpec.describe 'User filters responses', js: true do
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @inactive_survey.title)
-        expect(page).to_not have_selector('td', text: @survey.title)
+        expect(page).to have_no_selector('td', text: @survey.title)
       end
     end
 
@@ -124,14 +124,14 @@ RSpec.describe 'User filters responses', js: true do
       end
 
       scenario 'and sees responses for those Surveys' do
-        find('#for-SystemSurvey select#filterrific_with_survey + .btn-group').click
-        first('.dropdown-menu.open span.text', text: "Version #{@survey.version} (#{@survey.active ? I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:active] : I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:inactive]})").click
+        find('#for-SystemSurvey select#filterrific_with_survey + .dropdown-toggle').click
+        first('.dropdown-menu.open span', text: "Version #{@survey.version} (#{@survey.active ? I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:active] : I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:inactive]})").click
         find('body').click
         click_button I18n.t(:actions)[:filter]
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @survey.title)
-        expect(page).to_not have_selector('td', text: @other_survey.title)
+        expect(page).to have_no_selector('td', text: @other_survey.title)
       end
     end
 
@@ -146,14 +146,14 @@ RSpec.describe 'User filters responses', js: true do
 
       scenario 'and sees responses for those Forms' do
         bootstrap_select '#filterrific_of_type', 'Form'
-        find('#for-Form select#filterrific_with_survey + .btn-group').click
-        first('.dropdown-menu.open span.text', text: "Version #{@form.version} (#{@form.active ? I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:active] : I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:inactive]})").click
+        find('#for-Form select#filterrific_with_survey + .dropdown-toggle').click
+        first('.dropdown-menu.open span', text: "Version #{@form.version} (#{@form.active ? I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:active] : I18n.t(:surveyor)[:response_filters][:fields][:state_filters][:inactive]})").click
         find('body').click
         click_button I18n.t(:actions)[:filter]
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @form.title)
-        expect(page).to_not have_selector('td', text: @other_form.title)
+        expect(page).to have_no_selector('td', text: @other_form.title)
       end
     end
   end
@@ -176,7 +176,7 @@ RSpec.describe 'User filters responses', js: true do
 
 
         expect(page).to have_selector('td', text: @other_survey.title)
-        expect(page).to_not have_selector('td', text: @survey.title)
+        expect(page).to have_no_selector('td', text: @survey.title)
       end
     end
 
@@ -188,7 +188,7 @@ RSpec.describe 'User filters responses', js: true do
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @survey.title)
-        expect(page).to_not have_selector('td', text: @other_survey.title)
+        expect(page).to have_no_selector('td', text: @other_survey.title)
       end
     end
   end
@@ -208,7 +208,7 @@ RSpec.describe 'User filters responses', js: true do
         wait_for_javascript_to_finish
 
         expect(page).to have_selector('td', text: @survey.title)
-        expect(page).to_not have_selector('td', text: @other_survey.title)
+        expect(page).to have_no_selector('td', text: @other_survey.title)
       end
     end
 

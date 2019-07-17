@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development~
+# Copyright © 2011-2019 MUSC Foundation for Research Development~
 # All rights reserved.~
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:~
@@ -37,8 +37,8 @@ module SPARCCWF
       http_basic do |username, password|
 
         begin
-          username == Setting.find_by_key("remote_service_notifier_username").value &&
-            password == Setting.find_by_key("remote_service_notifier_password").value
+          username == Setting.get_value("remote_service_notifier_username") &&
+            password == Setting.get_value("remote_service_notifier_password")
         rescue
           false
         end

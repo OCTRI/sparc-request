@@ -1,4 +1,4 @@
-# Copyright © 2011-2018 MUSC Foundation for Research Development~
+# Copyright © 2011-2019 MUSC Foundation for Research Development~
 # All rights reserved.~
 
 # Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:~
@@ -34,22 +34,6 @@ RSpec.describe Notifier do
         @institution          = create(:institution, name: 'Institution')
         @provider             = create(:provider, parent: @institution, name: 'Provider')
         service_requester     = create(:identity)
-
-        pricing_setup = {id: '',
-                       display_date:   '2016-06-27',
-                       effective_date: '2016-06-28',
-                       federal:   '100',
-                       corporate: '100',
-                       other:     '100',
-                       member:    '100',
-                       college_rate_type:      'federal',
-                       federal_rate_type:      'federal',
-                       foundation_rate_type:   'federal',
-                       industry_rate_type:     'federal',
-                       investigator_rate_type: 'federal',
-                       internal_rate_type:     'federal',
-                       unfunded_rate_type:     'federal',
-                       newly_created: 'true'}
         @organization         = create(:program_with_pricing_setup, parent: @provider, name: 'Organize')
         create(:pricing_setup_without_validations, organization_id: @organization.id)
         @service              = create(:service, organization: @organization, one_time_fee: true, pricing_map_count: 1)
@@ -58,13 +42,14 @@ RSpec.describe Notifier do
         @service_request      = create(:service_request_without_validations, protocol: @protocol, submitted_at: Time.now.yesterday, status: 'submitted')
         @sub_service_request  = create(:sub_service_request_without_validations, service_request: @service_request, protocol: @protocol, organization: @organization, service_requester: service_requester)
         @line_item            = create(:line_item_without_validations, sub_service_request: @sub_service_request, service_request: @service_request, service: @service)
+        @note                 = create(:note_without_validations, identity: identity, notable: @protocol)
 
         @service_request.reload
 
         deleted_and_created_line_item_audit_trail(@service_request, @service, identity)
 
         @report               = @sub_service_request.audit_report(identity, Time.now.yesterday - 4.hours, Time.now)
-        @mail                 = Notifier.notify_service_provider(@service_provider, @service_request, identity, @sub_service_request, @report, true, false, false)
+        @mail                 = Notifier.notify_service_provider(@service_provider, @service_request, identity, @sub_service_request, @report, true, false)
       end
 
       it 'should display correct subject' do
@@ -80,8 +65,7 @@ RSpec.describe Notifier do
         assert_notification_email_tables_for_service_provider_with_all_services_deleted
       end
 
-      it 'should have a notes reminder message but not a submission reminder' do
-        does_not_have_a_reminder_note(@mail)
+      it 'should not have a submission reminder' do
         does_not_have_a_submission_reminder(@mail)
       end
 
@@ -107,7 +91,7 @@ RSpec.describe Notifier do
         deleted_and_created_line_item_audit_trail(@service_request, @service, identity)
 
         @report               = @sub_service_request.audit_report(identity, Time.now.yesterday - 4.hours, Time.now)
-        @mail                 = Notifier.notify_service_provider(@service_provider, @service_request, identity, @sub_service_request, @report, true, false, false)
+        @mail                 = Notifier.notify_service_provider(@service_provider, @service_request, identity, @sub_service_request, @report, true, false)
       end
 
       it 'should show epic column' do
